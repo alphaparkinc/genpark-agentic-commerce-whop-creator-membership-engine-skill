@@ -1,0 +1,204 @@
+{
+  "name": "genpark-agentic-commerce-whop-creator-membership-engine-skill",
+  "version": "1.0.0",
+  "title": "Whop-Style Creator Membership, License Key & Payout Engine Skill",
+  "description": "Whop-inspired creator commerce engine: membership pricing plans with trials and renewals, HMAC software license keys with device binding, entitlement routing by membership status, affiliate-aware creator payout waterfall, and MRR/churn/LTV analytics. Built for GenPark (https://www.genpark.ai).",
+  "homepage": "https://www.genpark.ai",
+  "linkedin": "https://www.linkedin.com/company/92955550",
+  "category": "agentic-commerce",
+  "topics": [
+    "whop",
+    "creator-economy",
+    "memberships",
+    "license-keys",
+    "digital-products",
+    "agentic-commerce",
+    "model-context-protocol",
+    "genpark"
+  ],
+  "tools": [
+    {
+      "name": "quote_pricing_plan",
+      "description": "Quote a membership plan: first charge, trial end, and the next N renewal dates.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "plan_type": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "renewal",
+              "free"
+            ]
+          },
+          "price": {
+            "type": "number"
+          },
+          "billing_period_days": {
+            "type": "integer"
+          },
+          "trial_days": {
+            "type": "integer"
+          },
+          "initial_fee": {
+            "type": "number"
+          },
+          "start_epoch": {
+            "type": "integer"
+          },
+          "renewals_to_project": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "plan_type",
+          "price"
+        ]
+      }
+    },
+    {
+      "name": "issue_license_key",
+      "description": "Issue an HMAC-signed license key bound to a membership and optional device fingerprint.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "secret": {
+            "type": "string"
+          },
+          "membership_id": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "device_fingerprint": {
+            "type": "string"
+          },
+          "expires_epoch": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "secret",
+          "membership_id",
+          "product_id"
+        ]
+      }
+    },
+    {
+      "name": "validate_license_key",
+      "description": "Validate a license key signature, expiry, and device binding.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "secret": {
+            "type": "string"
+          },
+          "license_key": {
+            "type": "string"
+          },
+          "device_fingerprint": {
+            "type": "string"
+          },
+          "now_epoch": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "secret",
+          "license_key"
+        ]
+      }
+    },
+    {
+      "name": "resolve_entitlements",
+      "description": "Map a membership status to access entitlements (community role, courses, apps, downloads).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "trialing",
+              "active",
+              "past_due",
+              "canceling",
+              "canceled",
+              "expired"
+            ]
+          },
+          "product_entitlements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "grace_period_days": {
+            "type": "integer"
+          },
+          "days_past_due": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "status",
+          "product_entitlements"
+        ]
+      }
+    },
+    {
+      "name": "compute_creator_payout",
+      "description": "Payout waterfall: gross sales minus refunds, platform fee, processing fees, and affiliate commissions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orders": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "platform_fee_pct": {
+            "type": "number"
+          },
+          "processing_fee_pct": {
+            "type": "number"
+          },
+          "processing_fixed_fee": {
+            "type": "number"
+          },
+          "affiliate_commission_pct": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "orders"
+        ]
+      }
+    },
+    {
+      "name": "compute_membership_metrics",
+      "description": "Compute MRR, monthly churn rate, ARPU, and estimated LTV from a membership list.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "memberships": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "period_start_active_count": {
+            "type": "integer"
+          },
+          "churned_in_period": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "memberships"
+        ]
+      }
+    }
+  ]
+}
